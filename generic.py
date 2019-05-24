@@ -14,25 +14,25 @@ class Int(BaseData):
         self._value = _value
 
     def crossover(self, other):
-        #TODO(@Azamat7): fix this function
-        """
         bitSelf = bin(self.generate())[2:]
         bitOther = bin(other.generate())[2:]
-        print(bitSelf)
-        print(bitOther)
         childLen = (len(bitSelf) + len(bitOther)) // 2   # new length for the offspring
         child, i, j = "", 0, 0
 
         for _ in range(childLen):
             prob = random.random()
-            bit = bitSelf[int(i+0.5)] if prob<0.5 else bitOther[int(j+0.5)]
+            si = min(len(bitSelf)-1,int(i+0.5))
+            oi = min(len(bitOther)-1,int(j+0.5))
+            bit = bitSelf[si] if prob<0.5 else bitOther[oi]
             child += bit
             i += len(bitSelf)/ childLen    # increment self bits
             j += len(bitOther)/ childLen   # increment other bits
 
-        return self.__class__(self.low, self.high, int("0b"+child,2))
-        """
-        return self.__class__(self.low, self.high, (self.generate() + other.generate()) // 2)
+        child = int("0b"+child,2)
+        if child<=self.low or child>=self.high:
+            child = (self.low+self.high)//2
+
+        return self.__class__(self.low, self.high, child)
 
     def mutation(self):
         bitValue = bin(self.generate())[2:]
