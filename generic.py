@@ -8,35 +8,41 @@ from base import BaseData
 
 #TODO(@Azamat7): Implement Int methods
 class Int(BaseData):
-    def __init__(self, low, high):
+    def __init__(self, low, high, _value=None):
         self.low = low
         self.high = high
-        self._value = None
+        self._value = _value
 
     def crossover(self, other):
-        bitSelf = bin(self._value)[2:]
-        bitOther = bin(other._value)[2:]
-
+        #TODO(@Azamat7): fix this function
+        """
+        bitSelf = bin(self.generate())[2:]
+        bitOther = bin(other.generate())[2:]
+        print(bitSelf)
+        print(bitOther)
         childLen = (len(bitSelf) + len(bitOther)) // 2   # new length for the offspring
         child, i, j = "", 0, 0
 
         for _ in range(childLen):
-            prob = random.random() 
+            prob = random.random()
             bit = bitSelf[int(i+0.5)] if prob<0.5 else bitOther[int(j+0.5)]
             child += bit
             i += len(bitSelf)/ childLen    # increment self bits
             j += len(bitOther)/ childLen   # increment other bits
 
-        return int("0b"+child,2)
+        return self.__class__(self.low, self.high, int("0b"+child,2))
+        """
+        return self.__class__(self.low, self.high, (self.generate() + other.generate()) // 2)
 
     def mutation(self):
-        bitValue = bin(value)[2:]
+        bitValue = bin(self.generate())[2:]
         mutated = ""
         for i in range(len(bitValue)):
-            prob = random.random() 
+            prob = random.random()
             bit = str(random.randint(0,1)) if prob>0.9 else bitValue[i]
             mutated += bit
-        self._value = int("0b"+mutated,2) 
+        return self.__class__(self.low, self.high, int("0b"+mutated,2))
+        self._value = int("0b"+mutated,2)
 
     def generate(self):
         if not self._value:
@@ -46,23 +52,30 @@ class Int(BaseData):
 
 #TODO(@Azamat7): Implement Float methods (see Int for reference)
 class Float(BaseData):
-    def __init__(self, low, high):
+    def __init__(self, low, high, _value=None):
         self.low = low
         self.high = high
-        self._value = None
+        self._value = _value
 
     def crossover(self, other):
-        return (self._value+other._value)/2
+        return self.__class__(
+            self.low,
+            self.high,
+            (self.generate()+other.generate())/2)
 
     def mutation(self):
-        bitValue = str(self._value)
+        bitValue = str(self.generate())
         dot = [p for p,c in enumerate(bitValue) if c=="."][0]
         mutated = bitValue[:dot+1]
         for i in range(dot+1,len(bitValue)):
-            prob = random.random() 
+            prob = random.random()
             bit = str(random.randint(0,9)) if prob>0.9 else bitValue[i]
             mutated += bit
-        self._value = float(mutated) 
+        return self.__class__(
+            self.low,
+            self.high,
+            float(mutated)
+        )
 
     def generate(self):
         if not self._value:
@@ -72,40 +85,40 @@ class Float(BaseData):
 
 #TODO(@Azamat7): Implement String methods (see Int for reference)
 class String(BaseData):
-    def __init__(self, low, high, chars):
+    def __init__(self, low, high, chars, _value=None):
         self.low = low
         self.high = high
-        self._value = None
         self.chars = chars
+        self._value = _value
 
     def crossover(self, other):
-        parent1 = self._value
-        parent2 = other._value
+        parent1 = self.generate()
+        parent2 = other.generate()
 
         childLen = (len(parent1) + len(parent2)) // 2   # new length for the offspring
         child, i, j = "", 0, 0
 
         for _ in range(childLen):
-            prob = random.random() 
+            prob = random.random()
             bit = parent1[int(i+0.5)] if prob<0.5 else parent2[int(j+0.5)]
             child += bit
             i += len(parent1)/ childLen    # increment self bits
             j += len(parent2)/ childLen   # increment other bits
 
-        return child
+        return self.__class__(self.low, self.high, self.chars, child)
 
     def mutation(self):
-        original = self._value
+        original = self.generate()
         mutated = ""
         for i in range(len(original)):
-            prob = random.random() 
+            prob = random.random()
             char = str(self.chars[random.randint(0,len(self.chars))]) if prob>0.9 else original[i]
             mutated += char
-        self._value = mutated 
+        return self.__class__(self.low, self.high, self.chars, mutated)
 
     def generate(self):
         if not self._value:
-            length = random.randint(low,high)
+            length = random.randint(self.low, self.high)
             value = ""
             for _ in range(length):
                 index = random.randint(0,len(self.chars))
@@ -138,13 +151,29 @@ class Tuple(BaseData):
         raise NotImplementedError()
 
 
-#TODO(@azretkenzhaliev, @anuartb): Implement Dict methods (see Int for reference)
 class Dict(BaseData):
+    """
+    User provides what keys can be in the dictionary and their types.
+    """
+    def __init__(self, key_dict=None):
+        self._value = None
+        self.key_dict = key_dict if key_dict else dict()
+
     def crossover(self, other):
-        raise NotImplementedError()
+        new_dict = self.__class__()
+        for k in self.key_dict.keys():
+            new_dict[k] = self._value[k].crossover(other._value[k])
+        return new_dict
 
     def mutation(self):
-        raise NotImplementedError()
+        new_dict = copy.deepcopy(self)
+        for k in self._value.keys():
+            new_dict[k] = new_dict[k].mutation()
+        return new_dict
 
     def generate(self):
-        raise NotImplementedError()
+        if not self._value:
+            self._value = dict()
+            for k in key_dict.keys():
+                self._value[k] = key_dict[k].generate()
+        return self._value

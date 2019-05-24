@@ -6,15 +6,35 @@ Base class for all classes of generic types with
 abstract mutation, crossover, and generate methods.
 """
 class BaseData(abc.ABC):
+    """
+    The method 'crossover' for a generic class T takes another instance of T
+    as an argument and returns *new instance of T*
+    NOTE: the instance (self) and the argument (other) are NOT modified
+    """
     @abc.abstractmethod
     def crossover(self, other):
         raise NotImplementedError()
 
+    """
+    The method 'mutation' for a generic class T returns *new instance of T*
+    which was mutated by some pre-defined rules.
+    NOTE: original instance is NOT modified.
+    """
     @abc.abstractmethod
     def mutation(self):
         raise NotImplementedError()
 
-    @abs.abstractmethod
+    """
+    The method 'generate' returns the value of the generic class T. So for example
+    if T is of class 'generic.Int' then some integer value is returned. Usually the
+    generate method has the following structure
+
+        if not self._value:
+            ... generate the value with the given constraints ...
+        return self._value
+
+    """
+    @abc.abstractmethod
     def generate(self):
         raise NotImplementedError()
 
