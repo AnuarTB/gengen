@@ -129,17 +129,10 @@ class String(BaseData):
 
 #TODO(@shynar88): Implement List methods (see Int for reference)
 class List(BaseData):
-    def __init__(self, low, high, elemType, elemLow, elemHigh, chars=None, _value=None):
+    def __init__(self, low, high, elem, _value=None):
         self.low = low
         self.high = high
-        self.elemType = elemType
-        self.elemLow = elemLow
-        self.elemHigh = elemHigh
-        self.chars = chars 
-        #I think implementation for String should be changed, 
-        # as it doesn't make sense to me to pass dict of chars everywhere, 
-        # bcs chars can be generated from ASCII code number or whatever, 
-        # without using some predefined dict of chars.
+        self.elem = elem
         self._value = _value
 
     def crossover(self, other):
@@ -151,70 +144,51 @@ class List(BaseData):
             child = self._value[:crossoverPoint] + other._value[crossoverPoint:]
         else:
             child = other._value[:crossoverPoint] + self._value[crossoverPoint:]
-        return self.__class__(self.low, self.high, self.elemType, self.elemLow, self.elemHigh, self.chars, child)
+        return self.__class__(self.low, self.high, self.elem, child)
 
     def mutation(self):
         original = self.generate()
         mutated = []
         for i in range(len(original)):
             prob = random.random()
-            elem = self.generateElem() if prob>0.9 else original[i]
+            elem = self.elem.generate() if prob>0.9 else original[i]
             mutated.append(elem)
-        return self.__class__(self.low, self.high, self.elemType, self.elemLow, self.elemHigh, self.chars, mutated)
+        return self.__class__(self.low, self.high, self.elem, mutated)
 
     def generate(self):
         if not self._value:
             length = random.randint(self.low, self.high)
             value = []
             for _ in range(length):
-                elem = self.generateElem()
+                elem = self.elem.generate()
                 value.append(elem)
             self._value = value
         return self._value
-
-    def generateElem(self):
-        return {
-            'Int': Int(self.elemLow, self.elemHigh).generate(), 
-            'Float': Float(self.elemLow, self.elemHigh).generate(),
-            'String': String(self.elemLow, self.elemHigh, self.chars).generate(),
-            #'Tuple': Tuple(self.tupleElemType, self.tupleElemLow, .............),  
-            # I eliminate this option bcs it seems like there is no end, 
-            # as Tuples, Lists are recursive data structues, 
-            # so I need to get low, high and etc for all nested data types 
-            # inside this recursive data structures, which makes input arguments suuuper long and infinite.
-            'Dict': Dict().generate() 
-        }[self.elemType]
+        
 
 
 #TODO(@shynar88): Implement Tuple methods (see Int for reference)
 class Tuple(BaseData):
-    def __init__(self, low, high, elemType, elemLow, elemHigh, chars=None, _value=None):
+    def __init__(self, low, high, elem, _value=None):
         self.low = low
         self.high = high
-        self.elemType = elemType
-        self.elemLow = elemLow
-        self.elemHigh = elemHigh
-        self.chars = chars 
-        #I think implementation for String should be changed, 
-        # as it doesn't make sense to me to pass dict of chars everywhere, 
-        # bcs chars can be generated from ASCII code number or whatever, 
-        # without using some predefined dict of chars.
+        self.elem = elem
         self._value = _value
     
     def crossover(self, other):
-        selfList = List(self.low, self.high. self.elemType, self.elemLow, self.elemHigh, self.chars, list(self._value))
-        otherList = List(other.low, other.high. other.elemType, other.elemLow, other.elemHigh, other.chars, list(other._value))
+        selfList = List(self.low, self.high, self.elem, list(self._value))
+        otherList = List(other.low, other.high. other.elem, list(other._value))
         child = tuple(selfList.crossover(otherList)._value)
-        return self.__class__(self.low, self.high, self.elemType, self.elemLow, self.elemHigh, self.chars, child)
+        return self.__class__(self.low, self.high, self.elem, child)
 
     def mutation(self):
-        selfList = List(self.low, self.high. self.elemType, self.elemLow, self.elemHigh, self.chars, list(self._value))
+        selfList = List(self.low, self.high, self.elem, list(self._value))
         mutated = tuple(selfList.mutation()._value)
-        return self.__class__(self.low, self.high, self.elemType, self.elemLow, self.elemHigh, self.chars, mutated)
+        return self.__class__(self.low, self.high, self.elem, mutated)
 
     def generate(self):
         if not self._value:
-            selfList = List(self.low, self.high. self.elemType, self.elemLow, self.elemHigh, self.chars, list(self._value))
+            selfList = List(self.low, self.high, self.elem, list(self._value))
             self._value = tuple(selfList.generate())
         return self._value
 
