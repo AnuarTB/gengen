@@ -86,7 +86,7 @@ class Float(BaseData):
 #TODO(@Azamat7): Implement String methods (see Int for reference)
 class String(BaseData):
     def __init__(self, low, high, chars, _value=None):
-        self.low = low
+        self.low = low        # should be at least 1
         self.high = high
         self.chars = chars
         self._value = _value
@@ -100,7 +100,9 @@ class String(BaseData):
 
         for _ in range(childLen):
             prob = random.random()
-            bit = parent1[int(i+0.5)] if prob<0.5 else parent2[int(j+0.5)]
+            si = min(len(parent1)-1,int(i+0.5))
+            oi = min(len(parent2)-1,int(j+0.5))
+            bit = parent1[si] if prob<0.5 else parent2[oi]
             child += bit
             i += len(parent1)/ childLen    # increment self bits
             j += len(parent2)/ childLen   # increment other bits
@@ -112,7 +114,7 @@ class String(BaseData):
         mutated = ""
         for i in range(len(original)):
             prob = random.random()
-            char = str(self.chars[random.randint(0,len(self.chars))]) if prob>0.9 else original[i]
+            char = str(self.chars[random.randint(0,len(self.chars)-1)]) if prob>0.9 else original[i]
             mutated += char
         return self.__class__(self.low, self.high, self.chars, mutated)
 
@@ -121,7 +123,7 @@ class String(BaseData):
             length = random.randint(self.low, self.high)
             value = ""
             for _ in range(length):
-                index = random.randint(0,len(self.chars))
+                index = random.randint(0,len(self.chars)-1)
                 value += self.chars[index]
             self._value = value
         return self._value
