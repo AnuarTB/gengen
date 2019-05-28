@@ -2,6 +2,7 @@
 Implementation of wrappers for generic types.
 """
 import random
+import copy
 
 from base import BaseData
 
@@ -136,7 +137,7 @@ class List(BaseData):
         self._value = _value
 
     def crossover(self, other):
-        shortestLen = min(len(self._value), len(other._value))
+        shortestLen = min(len(self.generate()), len(other.generate()))
         crossoverPoint = random.randint(0, shortestLen-1)
         randInt = random.randint(0, 1)
         child = []
@@ -151,7 +152,7 @@ class List(BaseData):
         mutated = []
         for i in range(len(original)):
             prob = random.random()
-            elem = self.elem.generate() if prob>0.9 else original[i]
+            elem = copy.deepcopy(self.elem).generate() if prob>0.9 else original[i]
             mutated.append(elem)
         return self.__class__(self.low, self.high, self.elem, mutated)
 
@@ -160,11 +161,10 @@ class List(BaseData):
             length = random.randint(self.low, self.high)
             value = []
             for _ in range(length):
-                elem = self.elem.generate()
+                elem = copy.deepcopy(self.elem).generate()
                 value.append(elem)
             self._value = value
         return self._value
-        
 
 
 #TODO(@shynar88): Implement Tuple methods (see Int for reference)
@@ -174,7 +174,7 @@ class Tuple(BaseData):
         self.high = high
         self.elem = elem
         self._value = _value
-    
+
     def crossover(self, other):
         selfList = List(self.low, self.high, self.elem, list(self._value))
         otherList = List(other.low, other.high. other.elem, list(other._value))

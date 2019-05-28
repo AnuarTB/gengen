@@ -1,0 +1,30 @@
+'''
+Not a unittest for now
+'''
+from evo import EvoGen
+from generic import Float, Int, List
+
+def f(a):
+    '''
+    Function that accepts float number
+    '''
+    return a + 2
+
+def insertionSort(tmp):
+    arr = tmp[:]
+    for i in range(1, len(arr)):
+        key = arr[i]
+        j = i - 1
+        while j >= 0 and key < arr[j] :
+                arr[j + 1] = arr[j]
+                j -= 1
+        arr[j + 1] = key
+    return arr
+
+def main():
+    e = EvoGen()
+    worst, t = e.generateWorstCase(insertionSort, List(100, 150, Int(-400, 400)))
+    print(worst, t)
+
+if __name__ == '__main__':
+    main()
