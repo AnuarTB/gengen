@@ -5,6 +5,8 @@ import abc
 Base class for all classes of generic types with
 abstract mutation, crossover, and generate methods.
 """
+
+
 class BaseData(abc.ABC):
     """
     The method 'crossover' for a generic class T takes another instance of T
@@ -43,11 +45,13 @@ class BaseData(abc.ABC):
 Base class for classes under test with
 implemented mutation, crossover, and generate methods.
 """
+
+
 class BaseInput(abc.ABC):
     def crossover(self, other):
         """
         Returns the new instance of the class, where
-        new instance have crossovered fields.
+        new instance has crossovered fields.
         """
         instance = self.__class__()
         for k, v in self.__dict__.items():
