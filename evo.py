@@ -7,7 +7,7 @@ class Input(object):
     def __init__(self, input_args, input_kwargs, fitness=None):
         self.input_args = input_args
         self.input_kwargs = input_kwargs
-        self.fitness = None
+        self.fitness = fitness
 
     def crossover(self, other):
         tmp_args = []
@@ -63,8 +63,8 @@ class Input(object):
 
 class EvoGen(object):
     def __init__(self, init_num=100, iter_num=300):
-        self.initNum = init_num  # The initial population number
-        self.iterNum = iter_num  # The number of generations
+        self.init_num = init_num  # The initial population number
+        self.iter_num = iter_num  # The number of generations
         self.input_class = None
 
     def create_input(self):
@@ -78,15 +78,15 @@ class EvoGen(object):
         self.input_class = Input(args, kwargs)
 
         population = []
-        for _ in range(self.initNum):
+        for _ in range(self.init_num):
             population.append(self.create_input())
 
         population.sort(key=lambda x: -x.calc_fitness(func))
 
         fittest = population[0]
-        for it in range(self.iterNum):
+        for it in range(self.iter_num):
             new_population = []
-            for _ in range(self.initNum):
+            for _ in range(self.init_num):
                 a = self.select(population)
                 b = self.select(population)
                 c = a.crossover(b)
