@@ -28,7 +28,9 @@ def main():
     e = EvoGen()
     worst, t = e.generate_worst_case(insertion_sort,
                                      List(100, 150, Int(-400, 400)))
-    print(worst, t)
+    print("The worst input:")
+    print(worst)
+    print(f"The runtime of the function for this input is: {t}")
 
 
 if __name__ == "__main__":
