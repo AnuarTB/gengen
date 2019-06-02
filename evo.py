@@ -86,8 +86,8 @@ class EvoGen(object):
         return copy.deepcopy(self.input_class)
 
     def select(self, population):
-        # TODO(@azretkenzhaliev) Write this function properly
-        return population[random.randint(0, 10)]
+        # TODO(@anuartb) Write this function properly
+        return population[random.randint(0, min(10, len(population) - 1))]
 
     def generate_worst_case(self, func, *args, **kwargs):
         """

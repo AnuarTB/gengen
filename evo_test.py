@@ -3,8 +3,8 @@ Not a unittest for now
 """
 from evo import EvoGen
 from generic import Float, Int, List
-from time import process_time
 import logging
+
 
 def write_log(elapsed_time, input):
     LOG_FORMAT = "%(asctime)s - %(message)s"
@@ -13,6 +13,7 @@ def write_log(elapsed_time, input):
                         format = LOG_FORMAT)
     logger = logging.getLogger()
     logger.info((elapsed_time, input))
+
 
 def f(a):
     """
@@ -33,16 +34,31 @@ def insertion_sort(tmp):
     return arr
 
 
+def bubble_sort(tmp):
+    aux = tmp[:]
+    while True:
+        relaxed = False
+        for i in range(len(aux) - 1):
+            if aux[i] > aux[i + 1]:
+                t = aux[i]
+                aux[i] = aux[i + 1]
+                aux[i + 1] = t
+                relaxed = True
+        if not relaxed:
+            break
+    return aux
+
+
 def main():
-    e = EvoGen()
-    run_time = process_time()
+    e = EvoGen(5, 300)
+
     worst, t = e.generate_worst_case(insertion_sort,
-                                     List(100, 150, Int(-400, 400)))
-    elapsed_time = process_time() - run_time
-    write_log(elapsed_time, worst)
-    print("The worst input:")
-    print(worst)
-    print(f"The runtime of the function for this input is: {t}")
+                                     List(1000, 3000, Int(-400, 400)))
+    print(worst, t)
+
+    worst, t = e.generate_worst_case(bubble_sort,
+                                     List(1000, 3000, Int(-400, 400)))
+    print(worst, t)
 
 
 if __name__ == "__main__":
