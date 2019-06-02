@@ -3,7 +3,16 @@ Not a unittest for now
 """
 from evo import EvoGen
 from generic import Float, Int, List
+from time import process_time
+import logging
 
+def write_log(elapsed_time, input):
+    LOG_FORMAT = "%(asctime)s - %(message)s"
+    logging.basicConfig(filename = "gengen_logs.log", 
+                        level = logging.DEBUG,
+                        format = LOG_FORMAT)
+    logger = logging.getLogger()
+    logger.info((elapsed_time, input))
 
 def f(a):
     """
