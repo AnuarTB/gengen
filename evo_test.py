@@ -24,10 +24,30 @@ def insertion_sort(tmp):
     return arr
 
 
+def bubble_sort(tmp):
+    aux = tmp[:]
+    while True:
+        relaxed = False
+        for i in range(len(aux) - 1):
+            if aux[i] > aux[i + 1]:
+                t = aux[i]
+                aux[i] = aux[i + 1]
+                aux[i + 1] = t
+                relaxed = True
+        if not relaxed:
+            break
+    return aux
+
+
 def main():
-    e = EvoGen()
+    e = EvoGen(5, 300)
+
     worst, t = e.generate_worst_case(insertion_sort,
-                                     List(100, 150, Int(-400, 400)))
+                                     List(1000, 3000, Int(-400, 400)))
+    print(worst, t)
+
+    worst, t = e.generate_worst_case(bubble_sort,
+                                     List(1000, 3000, Int(-400, 400)))
     print(worst, t)
 
 

@@ -72,7 +72,7 @@ class EvoGen(object):
 
     def select(self, population):
         # TODO(@anuartb) Write this function properly
-        return population[random.randint(0, 10)]
+        return population[random.randint(0, min(10, len(population) - 1))]
 
     def generate_worst_case(self, func, *args, **kwargs):
         self.input_class = Input(args, kwargs)
