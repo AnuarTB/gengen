@@ -17,8 +17,8 @@ def parse_log_data():
     return indexes, dates, exec_times, inputs
 
 def plot_graph(indexes, exec_times):
+    plt.figure(1)
     y_pos = np.arange(len(indexes))
-
     bars = plt.bar(y_pos, exec_times, align='center', alpha=0.5)
     autolabel(bars)
     plt.xticks(y_pos, indexes)
@@ -36,6 +36,7 @@ def autolabel(bars):
                 ha='center', va='bottom')
 
 def plot_table(indexes, dates, exec_times, inputs):
+    
     columns = ('Date', 'Runtime')
     rows = ['#%d' % x for x in indexes]
 
@@ -45,13 +46,20 @@ def plot_table(indexes, dates, exec_times, inputs):
     for d, t in zip(dates, exec_times):
         cell_text.append([d, t])
 
-    # Add a table at the bottom of the axes
-    table = plt.table(cellText=cell_text,
+    fig, ax = plt.subplots()
+
+    # Hide axes
+    ax.xaxis.set_visible(False) 
+    ax.yaxis.set_visible(False)
+    ax.spines['bottom'].set_color((0.1, 0.2, 0.5, 0.0))
+    ax.spines['top'].set_color((0.1, 0.2, 0.5, 0.0)) 
+    ax.spines['right'].set_color((0.1, 0.2, 0.5, 0.0))
+    ax.spines['left'].set_color((0.1, 0.2, 0.5, 0.0))
+    table = ax.table(cellText=cell_text,
                         rowLabels=rows,
                         rowColours=colors,
                         colLabels=columns,
-                        loc='bottom',
-                        bbox=[0.0, -0.4, 1.0, 0.3])
+                        loc='center')
 
 if __name__ == "__main__":
     (indexes, dates, exec_times, inputs) = parse_log_data()
