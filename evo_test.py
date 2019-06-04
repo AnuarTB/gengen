@@ -49,15 +49,40 @@ def bubble_sort(tmp):
     return aux
 
 
+def quick_sort(tmp):
+    less = []
+    equal = []
+    greater = []
+
+    if len(tmp) > 1:
+        pivot = tmp[0]
+        for x in tmp:
+            if x < pivot:
+                less.append(x)
+            elif x == pivot:
+                equal.append(x)
+            elif x > pivot:
+                greater.append(x)
+        return quick_sort(less) + equal + quick_sort(greater)
+    else:
+        return tmp
+
+
 def main():
-    e = EvoGen(5, 300)
+    e = EvoGen(5, 10)
 
     worst, t = e.generate_worst_case(insertion_sort,
-                                     List(1000, 3000, Int(-400, 400)))
+                                     List(1000, 2000, Int(-400, 400)))
     print(worst, t)
 
     worst, t = e.generate_worst_case(bubble_sort,
-                                     List(1000, 3000, Int(-400, 400)))
+                                     List(1000, 2000, Int(-400, 400)))
+
+    print(worst, t)
+
+    worst, t = e.generate_worst_case(quick_sort,
+                                     List(100000, 200000, Int(-400, 400)))
+
     print(worst, t)
 
 
