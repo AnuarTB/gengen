@@ -40,14 +40,16 @@ class Int(BaseData):
 
         return self.__class__(self.low, self.high, child)
 
-    def mutation(self):
-        bit_value = bin(self.generate())[2:]
-        mutated = ""
-        for i in range(len(bit_value)):
-            prob = random.random()
-            bit = str(random.randint(0, 1)) if prob > 0.9 else bit_value[i]
-            mutated += bit
-        return self.__class__(self.low, self.high, int("0b" + mutated, 2))
+    def mutation(self, mutator_id):
+        if mutator_id == 0:
+            bit_value = bin(self.generate())[2:]
+            mutated = ""
+            for i in range(len(bit_value)):
+                prob = random.random()
+                bit = str(random.randint(0, 1)) if prob > 0.9 else bit_value[i]
+                mutated += bit
+            return self.__class__(self.low, self.high, int("0b" + mutated, 2))
+        return self
 
     def generate(self):
         if not self._value:
@@ -66,15 +68,17 @@ class Float(BaseData):
         return self.__class__(self.low, self.high,
                               (self.generate() + other.generate()) / 2)
 
-    def mutation(self):
-        bit_value = str(self.generate())
-        dot = [p for p, c in enumerate(bit_value) if c == "."][0]
-        mutated = bit_value[:dot + 1]
-        for i in range(dot + 1, len(bit_value)):
-            prob = random.random()
-            bit = str(random.randint(0, 9)) if prob > 0.9 else bit_value[i]
-            mutated += bit
-        return self.__class__(self.low, self.high, float(mutated))
+    def mutation(self, mutator_id=0):
+        if mutator_id == 0:
+            bit_value = str(self.generate())
+            dot = [p for p, c in enumerate(bit_value) if c == "."][0]
+            mutated = bit_value[:dot + 1]
+            for i in range(dot + 1, len(bit_value)):
+                prob = random.random()
+                bit = str(random.randint(0, 9)) if prob > 0.9 else bit_value[i]
+                mutated += bit
+            return self.__class__(self.low, self.high, float(mutated))
+        return mutator_id
 
     def generate(self):
         if not self._value:
@@ -112,18 +116,20 @@ class String(BaseData):
 
         return self.__class__(self.low, self.high, self.chars, child)
 
-    def mutation(self):
-        original = self.generate()
-        mutated = ""
-        for i in range(len(original)):
-            prob = random.random()
-            if prob > 0.9:
-                char = str(self.chars[random.randint(0, len(self.chars) - 1)])
-            else:
-                char = original[i]
+    def mutation(self, mutator_id=0):
+        if mutator_id == 0:
+            original = self.generate()
+            mutated = ""
+            for i in range(len(original)):
+                prob = random.random()
+                if prob > 0.9:
+                    char = str(self.chars[random.randint(0, len(self.chars) - 1)])
+                else:
+                    char = original[i]
 
-            mutated += char
-        return self.__class__(self.low, self.high, self.chars, mutated)
+                mutated += char
+            return self.__class__(self.low, self.high, self.chars, mutated)
+        return self
 
     def generate(self):
         if not self._value:
@@ -156,29 +162,32 @@ class List(BaseData):
                      other._value[:crossover_point])
         return self.__class__(self.low, self.high, self.elem, child)
 
-    def mutation(self):
+    def mutation(self, mutator_id=0):
         original = self.generate()
-        mutated = []
+        mutated = original[:]
 
-        for i in range(len(original)):
-            prob = random.random()
-            elem = self.elem.generate() if prob > 0.9 else original[i]
-            elem = copy.deepcopy(self.elem).generate() if prob > 0.9 else original[i]
-            mutated.append(elem)
+        if mutator_id == 0:
+            for i in range(len(mutated)):
+                prob = random.random()
+                elem = self.elem.generate() if prob > 0.9 else mutated[i]
+                elem = copy.deepcopy(self.elem).generate() if prob > 0.9 else mutated[i]
+                mutated[i] = elem
+            return self.__class__(self.low, self.high, self.elem, mutated)
 
-        """
-        fraction = max(int(len(mutated) * 0.05), 1)
-        print(f"fraction: {fraction}")
-        for i in range(fraction):
-            left_index = random.randint(0, len(mutated) - 1)
-            right_index = random.randint(0, len(mutated) - 1)
+        elif mutator_id == 1:
+            fraction = max(int(len(mutated) * 0.05), 1)
+            for i in range(fraction):
+                left_index = max(0, random.randint(0, len(mutated) - 2))
+                right_index = max(0, random.randint(0, len(mutated) - 1))
+                if left_index == right_index:
+                    right_index += 1
+                t = mutated[left_index]
+                mutated[left_index] = mutated[right_index]
+                mutated[right_index] = t
+            return self.__class__(self.low, self.high, self.elem, mutated)
 
-            t = mutated[left_index]
-            mutated[left_index] = mutated[right_index]
-            mutated[right_index] = t
-        """
-
-        return self.__class__(self.low, self.high, self.elem, mutated)
+        else:
+            return self
 
     def generate(self):
         if not self._value:
@@ -205,10 +214,12 @@ class Tuple(BaseData):
         child = tuple(self_list.crossover(other_list)._value)
         return self.__class__(self.low, self.high, self.elem, child)
 
-    def mutation(self):
-        self_list = List(self.low, self.high, self.elem, list(self._value))
-        mutated = tuple(self_list.mutation()._value)
-        return self.__class__(self.low, self.high, self.elem, mutated)
+    def mutation(self, mutator_id=0):
+        if mutator_id == 0:
+            self_list = List(self.low, self.high, self.elem, list(self._value))
+            mutated = tuple(self_list.mutation()._value)
+            return self.__class__(self.low, self.high, self.elem, mutated)
+        return self
 
     def generate(self):
         if not self._value:
@@ -231,11 +242,13 @@ class Dict(BaseData):
             new_dict.key_dict[k] = self._value[k].crossover(other._value[k])
         return new_dict
 
-    def mutation(self):
-        new_dict = copy.deepcopy(self)
-        for k in self._value.keys():
-            new_dict.key_dict[k] = new_dict.key_dict[k].mutation()
-        return new_dict
+    def mutation(self, mutator_id=0):
+        if mutator_id == 0:
+            new_dict = copy.deepcopy(self)
+            for k in self._value.keys():
+                new_dict.key_dict[k] = new_dict.key_dict[k].mutation()
+            return new_dict
+        return self
 
     def generate(self):
         if not self._value:
