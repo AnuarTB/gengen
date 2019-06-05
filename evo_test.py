@@ -7,7 +7,9 @@ import time
 
 from evo import EvoGen, Input
 from generic import Float, Int, List
+
 import hash
+import logging
 
 
 def write_log(elapsed_time, input):
