@@ -78,8 +78,9 @@ def evaluate(func, inp):
 
 
 def main():
-    e = EvoGen(10, 20)
+    e = EvoGen(10, 200)
 
+    """
     worst, t = e.generate_worst_case(insertion_sort,
                                      List(3000, 3000, Int(-400, 400)))
     print(f"t: {t}")
@@ -93,6 +94,7 @@ def main():
                                      List(200000, 200000, Int(-400, 400)))
 
     print(f"t: {t}")
+    """
 
     length = 10000
 

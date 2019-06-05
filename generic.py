@@ -158,12 +158,13 @@ class List(BaseData):
 
     def mutation(self):
         original = self.generate()
-        mutated = original[:]
+        mutated = []
 
-        for i in range(len(mutated)):
+        for i in range(len(original)):
             prob = random.random()
+            elem = self.elem.generate() if prob > 0.9 else original[i]
             elem = copy.deepcopy(self.elem).generate() if prob > 0.9 else original[i]
-            mutated[i] = elem
+            mutated.append(elem)
 
         """
         fraction = max(int(len(mutated) * 0.05), 1)

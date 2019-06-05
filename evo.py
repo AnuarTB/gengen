@@ -72,7 +72,7 @@ class Input(object):
 
 
 class EvoGen(object):
-    def __init__(self, pop_num=100, iter_num=300, mut_prob=0.2, ratio=0.2):
+    def __init__(self, pop_num=100, iter_num=300, mut_prob=0.2, ratio=0.1):
         """
         In order to generate the worst input for the function, this
         wrapper class is instantiated with some of the hyperparameters
@@ -142,9 +142,9 @@ class EvoGen(object):
 
             new_population.sort(key=lambda x: -x.calc_fitness(func))
             population = population[:int(self.ratio * self.pop_num) + 1] + new_population[:int((1.0 - self.ratio) * self.pop_num) + 1]
-            population = population[:self.pop_num]
 
             population.sort(key=lambda x: -x.calc_fitness(func))
+            population = population[:self.pop_num]
 
             if population[0].calc_fitness(func) > fittest.calc_fitness(func):
                 fittest = population[0]
