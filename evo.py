@@ -1,3 +1,4 @@
+import bisect
 import copy
 import random
 import time
@@ -71,7 +72,7 @@ class Input(object):
 
 
 class EvoGen(object):
-    def __init__(self, pop_num=100, iter_num=300, mut_prob=0.2):
+    def __init__(self, pop_num=100, iter_num=300, mut_prob=0.2, ratio=0.2):
         """
         In order to generate the worst input for the function, this
         wrapper class is instantiated with some of the hyperparameters
@@ -80,14 +81,19 @@ class EvoGen(object):
         self.pop_num = pop_num  # The population number
         self.iter_num = iter_num  # The number of generations
         self.mut_prob = mut_prob # The probability that the input will mutate
+        self.ratio = ratio # what ratio of old populatio should we preserve
         self.input_class = None
 
     def create_input(self):
         return copy.deepcopy(self.input_class)
 
-    def select(self, population):
+    def select(self, population, fitnesses=None, r=None, distr=None):
         # TODO(@azretkenzhaliev) Write this function properly
-        return population[random.randint(0, 10)]
+        if fitnesses is not None:
+            index = bisect.bisect_left(fitnesses, r)
+            return population[index - 1 if index == len(fitnesses) else index]
+        else:
+            return population[random.randint(0, min(10, len(population) - 1))]
 
     def generate_worst_case(self, func, *args, **kwargs):
         """
@@ -111,9 +117,22 @@ class EvoGen(object):
         fittest = population[0]
         for it in range(self.iter_num):
             new_population = []
+
+            fitnesses = []
+            sum_fitnesses = 0
+            for osob in population:
+                fitness = osob.calc_fitness(func)
+                fitnesses.append(fitness)
+                sum_fitnesses += fitness
+
+            for i in range(len(fitnesses)):
+                fitnesses[i] /= sum_fitnesses
+                if i > 0:
+                    fitnesses[i] += fitnesses[i - 1]
+
             for _ in range(self.pop_num):
-                a = self.select(population)
-                b = self.select(population)
+                a = self.select(population, fitnesses, random.random())
+                b = self.select(population, fitnesses, random.random())
                 c = a.crossover(b)
 
                 if random.random() < self.mut_prob:
@@ -121,14 +140,18 @@ class EvoGen(object):
 
                 new_population.append(c)
 
-            population += new_population
-            population.sort(key=lambda x: -x.calc_fitness(func))
+            new_population.sort(key=lambda x: -x.calc_fitness(func))
+            population = population[:int(self.ratio * self.pop_num) + 1] + new_population[:int((1.0 - self.ratio) * self.pop_num) + 1]
             population = population[:self.pop_num]
+
+            population.sort(key=lambda x: -x.calc_fitness(func))
+
             if population[0].calc_fitness(func) > fittest.calc_fitness(func):
                 fittest = population[0]
 
-            avg_fitness = sum(map(lambda x: x.calc_fitness(func), population)) / len(population)
-            print(f"Generation #{it}, average gene metrics: "
-                  f"{avg_fitness}")
+            avg_fitness = sum_fitnesses / len(fitnesses)
+            print(f"Generation #{it}, "
+                  f"average gene metrics: {avg_fitness}, "
+                  f"fittest gene: {fittest.calc_fitness(func)}")
 
         return fittest.generate(), fittest.calc_fitness(func)

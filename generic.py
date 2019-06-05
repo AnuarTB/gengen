@@ -158,15 +158,25 @@ class List(BaseData):
 
     def mutation(self):
         original = self.generate()
-        mutated = []
-        for i in range(len(original)):
-            prob = random.random()
-            if prob > 0.9:
-                elem = copy.deepcopy(self.elem).generate()
-            else:
-                elem = original[i]
+        mutated = original[:]
 
-            mutated.append(elem)
+        for i in range(len(mutated)):
+            prob = random.random()
+            elem = copy.deepcopy(self.elem).generate() if prob > 0.9 else original[i]
+            mutated[i] = elem
+
+        """
+        fraction = max(int(len(mutated) * 0.05), 1)
+        print(f"fraction: {fraction}")
+        for i in range(fraction):
+            left_index = random.randint(0, len(mutated) - 1)
+            right_index = random.randint(0, len(mutated) - 1)
+
+            t = mutated[left_index]
+            mutated[left_index] = mutated[right_index]
+            mutated[right_index] = t
+        """
+
         return self.__class__(self.low, self.high, self.elem, mutated)
 
     def generate(self):
