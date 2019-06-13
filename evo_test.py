@@ -90,23 +90,25 @@ def main():
     random_input = [random.randint(0, 99) for i in range(10000)]
     print(f"random input: {evaluate(hash_test, random_input)}")
     """
+
+    length = 3000
     
-    worst_input = [5000 - i - 1 for i in range(5000)]
+    worst_input = [length - i - 1 for i in range(length)]
     print(f"theoretical worst: {evaluate(insertion_sort, worst_input)}")
 
-    random_input = [random.randint(-400, 400) for i in range(5000)]
+    random_input = [random.randint(-400, 400) for i in range(length)]
     print(f"random input: {evaluate(insertion_sort, random_input)}")
 
-    e = EvoGen(20, 30, parent_selection=1, mut_prob=0.5, ratio=0.6, mutator_list=1)
+    e = EvoGen(10, 50, parent_selection=1, mut_prob=0.5, ratio=0.6, mutator_list=1)
 
     _, t = e.generate_worst_case(insertion_sort,
-                                 List(5000, 5000, Int(-400, 400)))
+                                 List(length, length, Int(-400, 400)))
     print(f"t: {t}")
 
-    worst_input = [5000 - i - 1 for i in range(5000)]
+    worst_input = [length - i - 1 for i in range(length)]
     print(f"theoretical worst: {evaluate(insertion_sort, worst_input)}")
 
-    random_input = [random.randint(-400, 400) for i in range(5000)]
+    random_input = [random.randint(-400, 400) for i in range(length)]
     print(f"random input: {evaluate(insertion_sort, random_input)}")
 
     """

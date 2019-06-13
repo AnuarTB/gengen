@@ -12,3 +12,11 @@ For reference you can see generic_test.py. We use unittest module and to execute
 ```
 python -m unittest -v generic_test.py
 ```
+
+**Algorithm execution (insertion_sort)**
+```
+from evo import EvoGen
+
+e = EvoGen(iter_num = 10)
+worst_input, worst_time = e.generate_worst_case(insertion_sort, List(20, 25, Int(-20, 20))) 
+```
