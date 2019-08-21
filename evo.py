@@ -72,7 +72,7 @@ class Input(object):
 
 
 class EvoGen(object):
-    def __init__(self, pop_num=100, iter_num=300, mut_prob=0.2, ratio=0.1):
+    def __init__(self, pop_num=100, iter_num=300, mut_prob=0.8, ratio=0.6):
         """
         In order to generate the worst input for the function, this
         wrapper class is instantiated with some of the hyperparameters

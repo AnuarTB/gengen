@@ -47,7 +47,7 @@ class Int(BaseData):
             prob = random.random()
             bit = str(random.randint(0, 1)) if prob > 0.9 else bit_value[i]
             mutated += bit
-        return self.__class__(self.low, self.high, int("0b" + mutated, 2))
+        return self.__class__(self.low, self.high, int("0" + mutated, 2))
 
     def generate(self):
         if not self._value:
@@ -162,8 +162,8 @@ class List(BaseData):
 
         for i in range(len(original)):
             prob = random.random()
-            elem = self.elem.generate() if prob > 0.9 else original[i]
-            elem = copy.deepcopy(self.elem).generate() if prob > 0.9 else original[i]
+            #elem = self.elem.generate() if prob > 0.9 else original[i]
+            elem = copy.deepcopy(self.elem).generate() if prob > 0.7 else original[i]
             mutated.append(elem)
 
         """
