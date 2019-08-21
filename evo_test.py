@@ -78,38 +78,50 @@ def evaluate(func, inp):
 
 
 def main():
-    e = EvoGen(10, 200)
-
     """
-    worst, t = e.generate_worst_case(insertion_sort,
-                                     List(3000, 3000, Int(-400, 400)))
+    e = EvoGen(10, 50, parent_selection=0, mutator_list=0)
+    _, t = e.generate_worst_case(hash_test,
+                                 List(10000, 10000, Int(-400, 400)))
     print(f"t: {t}")
 
-    worst, t = e.generate_worst_case(bubble_sort,
-                                     List(3000, 3000, Int(-400, 400)))
+    worst_input = [0] * 10000
+    print(f"theoretical worst: {evaluate(hash_test, worst_input)}")
 
-    print(f"t: {t}")
-
-    worst, t = e.generate_worst_case(quick_sort,
-                                     List(200000, 200000, Int(-400, 400)))
-
-    print(f"t: {t}")
+    random_input = [random.randint(0, 99) for i in range(10000)]
+    print(f"random input: {evaluate(hash_test, random_input)}")
     """
 
-    length = 10000
+    length = 3000
+    
+    worst_input = [length - i - 1 for i in range(length)]
+    print(f"theoretical worst: {evaluate(insertion_sort, worst_input)}")
 
-    worst, t = e.generate_worst_case(hash_test,
-                                     List(length, length, Int(-400, 400)))
+    random_input = [random.randint(-400, 400) for i in range(length)]
+    print(f"random input: {evaluate(insertion_sort, random_input)}")
+
+    e = EvoGen(10, 50, parent_selection=1, mut_prob=0.5, ratio=0.6, mutator_list=1)
+
+    _, t = e.generate_worst_case(insertion_sort,
+                                 List(length, length, Int(-400, 400)))
+    print(f"t: {t}")
+
+    worst_input = [length - i - 1 for i in range(length)]
+    print(f"theoretical worst: {evaluate(insertion_sort, worst_input)}")
+
+    random_input = [random.randint(-400, 400) for i in range(length)]
+    print(f"random input: {evaluate(insertion_sort, random_input)}")
+
+    """
+    _, t = e.generate_worst_case(bubble_sort,
+                                 List(3000, 3000, Int(-400, 400)))
 
     print(f"t: {t}")
 
-    best_list = [0] * length
-    print(f"best_list: {evaluate(hash_test, best_list)}")
+    _, t = e.generate_worst_case(quick_sort,
+                                 List(200000, 200000, Int(-400, 400)))
 
-    rand_list = []
-    for i in range(length):
-        rand_list.append(random.randint(0, 99))
-    print(f"rand_list: {evaluate(hash_test, rand_list)}")
+    print(f"t: {t}")
+    """
 
 
 if __name__ == "__main__":
