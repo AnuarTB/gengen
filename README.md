@@ -14,7 +14,7 @@ python -m unittest -v generic_test.py
 ```
 
 **Example of execution (insertion_sort)**
-```
+```python
 from generic import List, Int
 from evo import EvoGen
 
